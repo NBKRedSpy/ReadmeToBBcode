@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ReadmeToBBcode": {
+      "commandName": "Project",
+      "commandLineArgs": "convert path=\"C:\\work\\test.md\""
+    }
+  }
+}
