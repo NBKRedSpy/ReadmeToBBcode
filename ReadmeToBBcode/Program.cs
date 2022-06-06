@@ -38,11 +38,30 @@ namespace ReadmeToBBcode
             Console.WriteLine(MarkdownToBbCodeOldString(File.ReadAllText(fileName)));
         }
 
+        public static void MarkdownTableToAsciiCommand(string? filename)
+        {
+            StreamReader stream;
+
+            if (filename is null)
+            {
+                //Read from std input
+                 stream = new StreamReader(Console.OpenStandardInput());
+            }
+            else
+            {
+                stream = new StreamReader(filename);
+            }
+
+            AsciiTable asciiTable = new AsciiTable();
+
+            Console.Write(asciiTable.ConvertTable(stream));
+
+        }
+
 
         private static void GetCommandLineCommand(string[] args)
         {
-
-            //Convert options
+            //---------- Convert options
             var pathValue = new Option<string>("path", "The path to the file");
             var convertCommand = new Command("convert", "Converts markdown to NexusMods format bbcode")
             {
@@ -54,15 +73,19 @@ namespace ReadmeToBBcode
                     ConvertToBbCode(path);
                 },pathValue);
 
-            //Table command 
-
-            var tableCommand= new Command("table", "Creates an ASCII table from markdown table input");
-
-            tableCommand.SetHandler(() =>
+            //---------- Table command 
+            var tablePathValue = new Option<string>("path", "The path to the file to read.  If not set, the program will use stdin");
+            var tableCommand = new Command("table", "Creates an ASCII table from markdown table input")
             {
-                Console.WriteLine("hit table");
-            });
+                tablePathValue
+            };
 
+            tableCommand.SetHandler((string path) =>
+            {
+                MarkdownTableToAsciiCommand(path);
+            }, tablePathValue);
+
+            
             RootCommand rootCommand = new()
             {
                 convertCommand,
@@ -70,11 +93,6 @@ namespace ReadmeToBBcode
             };
 
             rootCommand.Invoke(args);
-        }
-
-        private static void ConvertTable()
-        {
-            throw new NotImplementedException();
         }
 
         static string MarkdownToBbCodeOldString(string source)

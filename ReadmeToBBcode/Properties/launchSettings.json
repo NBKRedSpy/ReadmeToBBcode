@@ -2,7 +2,7 @@
   "profiles": {
     "ReadmeToBBcode": {
       "commandName": "Project",
-      "commandLineArgs": "convert path=\"C:\\work\\test.md\""
+      "commandLineArgs": "table path=\"c:\\work\\table.md\"\r\n"
     }
   }
 }
