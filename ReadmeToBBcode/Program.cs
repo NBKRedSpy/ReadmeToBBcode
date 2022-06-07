@@ -52,9 +52,12 @@ namespace ReadmeToBBcode
                 stream = new StreamReader(filename);
             }
 
-            AsciiTable asciiTable = new AsciiTable();
 
-            Console.Write(asciiTable.ConvertTable(stream));
+            MarkdownTableGenerator tableGenerator = new MarkdownTableGenerator();
+
+            Console.Write(tableGenerator.CreateTable(stream, 80));
+
+            //Console.Write(asciiTable.ConvertTable(stream));
 
         }
 
