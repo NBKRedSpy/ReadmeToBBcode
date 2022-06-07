@@ -10,20 +10,7 @@ namespace ReadmeToBBcode
             try
             {
 
-                GetCommandLineCommand(args);
-
-                //Console.WriteLine(MarkdownToBbCodeOldstring(File.ReadAllText(args[0])));
-
-                //string output = markdownToBbCode.Parse(File.ReadAllText(@"C:\src\Battletech\BtShowXp\README.md"));
-
-                //string output = markdownToBbCode.Parse(File.ReadAllText(args[0]));
-
-
-                //string output = markdownToBbCode.Parse(File.ReadAllText(@"C:\work\test.md"));
-
-
-                //File.WriteAllText(@"c:\work\bbcode.txt", output);
-
+                HandleCommandLine(args);
             }
             catch (Exception ex)
             {
@@ -38,7 +25,7 @@ namespace ReadmeToBBcode
             Console.WriteLine(MarkdownToBbCodeOldString(File.ReadAllText(fileName)));
         }
 
-        public static void MarkdownTableToAsciiCommand(string? filename)
+        public static void MarkdownTableToAsciiCommand(string? filename, int maxTableWidth)
         {
             StreamReader stream;
 
@@ -55,14 +42,14 @@ namespace ReadmeToBBcode
 
             MarkdownTableGenerator tableGenerator = new MarkdownTableGenerator();
 
-            Console.Write(tableGenerator.CreateTable(stream, 80));
+            Console.Write(tableGenerator.CreateTable(stream, maxTableWidth));
 
             //Console.Write(asciiTable.ConvertTable(stream));
 
         }
 
 
-        private static void GetCommandLineCommand(string[] args)
+        private static void HandleCommandLine(string[] args)
         {
             //---------- Convert options
             var pathValue = new Option<string>("path", "The path to the file");
@@ -78,16 +65,27 @@ namespace ReadmeToBBcode
 
             //---------- Table command 
             var tablePathValue = new Option<string>("path", "The path to the file to read.  If not set, the program will use stdin");
+
+            Option<int> maxTableWidthOption = new(
+                name: "maxTableWidth",
+                getDefaultValue: () => 80,
+                description: "The maximum width the table.  Set to 0 to not limit.  Defaults to 80");
+
+            //Option<int> maxTableWidthOption = new(
+            //    name: "maxTableWidth",
+            //    getDefaultValue: () => 80, 
+            //    description: "The maximum width the table.  Set to 0 to not limit.  Defaults to 80");
+
             var tableCommand = new Command("table", "Creates an ASCII table from markdown table input")
             {
-                tablePathValue
+                tablePathValue,
+                maxTableWidthOption,
             };
 
-            tableCommand.SetHandler((string path) =>
+            tableCommand.SetHandler((string path, int maxTableWidth) =>
             {
-                MarkdownTableToAsciiCommand(path);
-            }, tablePathValue);
-
+                MarkdownTableToAsciiCommand(path, maxTableWidth);
+            }, tablePathValue, maxTableWidthOption);
             
             RootCommand rootCommand = new()
             {

@@ -2,7 +2,7 @@
   "profiles": {
     "ReadmeToBBcode": {
       "commandName": "Project",
-      "commandLineArgs": "table path=\"c:\\work\\table.md\"\r\n"
+      "commandLineArgs": "table path=\"c:\\work\\table.md\" maxTableWidth=50\r\n"
     }
   }
 }

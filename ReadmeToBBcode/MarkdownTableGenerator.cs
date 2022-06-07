@@ -65,7 +65,10 @@ namespace ReadmeToBBcode
                 Out = output,
             });
 
-            console.Profile.Width = maxWidth;
+            if(maxWidth != 0)
+            {
+                console.Profile.Width = maxWidth;
+            }
 
             console.Write(table);
             return outBuilder.ToString();
