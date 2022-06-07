@@ -58,12 +58,14 @@ namespace ReadmeToBBcode
             StringWriter stringWriter = new(outBuilder);
             AnsiConsoleOutput output = new(stringWriter);
 
+
             //AnsiConsoleFactory factory = new();
 
             var console = AnsiConsole.Create(new AnsiConsoleSettings()
             {
                 Out = output,
-            });
+                Ansi = AnsiSupport.No,
+            }) ;
 
             if(maxWidth != 0)
             {
@@ -80,7 +82,7 @@ namespace ReadmeToBBcode
         private string[] MarkDownRowToColumns(string line)
         {
             //Remove border pipes.
-            string converted = line.Trim(' ', '|', '\t');
+            string converted = line.Trim(' ', '|', '\t').EscapeMarkup();
 
             return converted.Split('|').Select(x => x.Trim()).ToArray();
         }
