@@ -9,7 +9,7 @@ namespace ReadmeToBBcode
 {
     public class MarkdownTableGenerator
     { 
-        public string CreateTable(StreamReader textStream, int maxWidth)
+        public string CreateTable(StreamReader textStream, int maxWidth, bool removeCodeBlocks, bool useBbCodeFont)
         {
 
 
@@ -25,7 +25,6 @@ namespace ReadmeToBBcode
 
             string[] headerRowColumns = MarkDownRowToColumns(line);
             table.AddColumns(headerRowColumns);
-            table.Columns[0].Alignment = Justify.Left;
 
             bool isFirstRow = true;
 
@@ -34,6 +33,10 @@ namespace ReadmeToBBcode
                 //check for mark down header line
                 if (line.Trim('|', '-').Length > 0)
                 {
+                    if(removeCodeBlocks)
+                    {
+                        line = line.Replace("```", "");
+                    }
 
                     if(isFirstRow)
                     {
@@ -50,7 +53,18 @@ namespace ReadmeToBBcode
                 }
             }
 
-            return TableToString(maxWidth, table);
+
+            string output = TableToString(maxWidth, table);
+
+            output = output.Trim('\r', '\n', ' ', '\t');
+
+            if (useBbCodeFont)
+            {
+                output = $"[font=Courier New] {Environment.NewLine}{output}{Environment.NewLine}[/font]";
+            }
+
+            return output;
+            
         }
 
         private static string TableToString(int maxWidth, Table table)

@@ -25,7 +25,8 @@ namespace ReadmeToBBcode
             Console.WriteLine(MarkdownToBbCodeOldString(File.ReadAllText(fileName)));
         }
 
-        public static void MarkdownTableToAsciiCommand(string? filename, int maxTableWidth)
+        public static void MarkdownTableToAsciiCommand(string? filename, int maxTableWidth, bool removeCodeBlocks, 
+            bool useBbCodeFont)
         {
             StreamReader stream;
 
@@ -42,7 +43,7 @@ namespace ReadmeToBBcode
 
             MarkdownTableGenerator tableGenerator = new MarkdownTableGenerator();
 
-            Console.Write(tableGenerator.CreateTable(stream, maxTableWidth));
+            Console.Write(tableGenerator.CreateTable(stream, maxTableWidth, removeCodeBlocks, useBbCodeFont));
 
             //Console.Write(asciiTable.ConvertTable(stream));
 
@@ -71,20 +72,30 @@ namespace ReadmeToBBcode
 
             Option<int> maxTableWidthOption = new(
                 name: "maxTableWidth",
-                getDefaultValue: () => 80,
-                description: "The maximum width the table.  Set to 0 to not limit.  Defaults to 80");
+                getDefaultValue: () => 100,
+                description: "The maximum width the table.  Set to 0 to not limit.");
 
+            var useBbCodeFontOption = new Option<bool>("use-bbcode-font", () => true, "If true, wraps the table in the Courier New font");
+            useBbCodeFontOption.Arity = ArgumentArity.ZeroOrOne;
+
+
+            var removeCodeBlockOption = new Option<bool>("remove-code-block", () => true, "Removes and mardown code blocks (```) in the text");
+            removeCodeBlockOption.Arity = ArgumentArity.ZeroOrOne;
 
             var tableCommand = new Command("table", "Creates an ASCII table from markdown table input")
             {
                 tablePathValue,
                 maxTableWidthOption,
+                removeCodeBlockOption,
+                useBbCodeFontOption,
+
             };
 
-            tableCommand.SetHandler((string path, int maxTableWidth) =>
+            tableCommand.SetHandler((string path, int maxTableWidth, bool removeCodeBlocks, bool useBbCodeFont) =>
             {
-                MarkdownTableToAsciiCommand(path, maxTableWidth);
-            }, tablePathValue, maxTableWidthOption);
+                MarkdownTableToAsciiCommand(path, maxTableWidth, removeCodeBlocks, useBbCodeFont);
+            }, tablePathValue, maxTableWidthOption, removeCodeBlockOption, useBbCodeFontOption);
+
             return tableCommand;
         }
 
@@ -92,9 +103,11 @@ namespace ReadmeToBBcode
         {
             //---------- Convert options
             var pathValue = new Option<string>("path", "The path to the file");
+
+
             var convertCommand = new Command("convert", "Converts markdown to NexusMods format bbcode")
             {
-                pathValue
+                pathValue,
             };
 
             convertCommand.SetHandler((string path) =>
@@ -115,19 +128,9 @@ namespace ReadmeToBBcode
 
             //Code
             outText = Regex.Replace(outText, "```(.+?)```", "[code]$1[/code]", RegexOptions.Singleline);
-            //links
-
 
             return outText;
-            //File.WriteAllText(@"C:\work\netout.txt", outText);
-
-            //[url= http://www.google.com]display stuff[/url]
-            //[img]http://blah.png[/img]
-
-            //class Test
-            //{
-            //    public int val;
-            //}
+          
         }
     }
 }
