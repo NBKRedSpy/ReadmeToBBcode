@@ -51,18 +51,21 @@ namespace ReadmeToBBcode
 
         private static void HandleCommandLine(string[] args)
         {
-            //---------- Convert options
-            var pathValue = new Option<string>("path", "The path to the file");
-            var convertCommand = new Command("convert", "Converts markdown to NexusMods format bbcode")
+
+            Command convertCommand = SetupConvertCommand();
+            Command tableCommand = SetupTableCommand();
+
+            RootCommand rootCommand = new()
             {
-                pathValue
+                convertCommand,
+                tableCommand,
             };
 
-            convertCommand.SetHandler((string path) =>
-                {
-                    ConvertToBbCode(path);
-                },pathValue);
+            rootCommand.Invoke(args);
+        }
 
+        private static Command SetupTableCommand()
+        {
             //---------- Table command 
             var tablePathValue = new Option<string>("path", "The path to the file to read.  If not set, the program will use stdin");
 
@@ -71,10 +74,6 @@ namespace ReadmeToBBcode
                 getDefaultValue: () => 80,
                 description: "The maximum width the table.  Set to 0 to not limit.  Defaults to 80");
 
-            //Option<int> maxTableWidthOption = new(
-            //    name: "maxTableWidth",
-            //    getDefaultValue: () => 80, 
-            //    description: "The maximum width the table.  Set to 0 to not limit.  Defaults to 80");
 
             var tableCommand = new Command("table", "Creates an ASCII table from markdown table input")
             {
@@ -86,14 +85,23 @@ namespace ReadmeToBBcode
             {
                 MarkdownTableToAsciiCommand(path, maxTableWidth);
             }, tablePathValue, maxTableWidthOption);
-            
-            RootCommand rootCommand = new()
+            return tableCommand;
+        }
+
+        private static Command SetupConvertCommand()
+        {
+            //---------- Convert options
+            var pathValue = new Option<string>("path", "The path to the file");
+            var convertCommand = new Command("convert", "Converts markdown to NexusMods format bbcode")
             {
-                convertCommand,
-                tableCommand,
+                pathValue
             };
 
-            rootCommand.Invoke(args);
+            convertCommand.SetHandler((string path) =>
+            {
+                ConvertToBbCode(path);
+            }, pathValue);
+            return convertCommand;
         }
 
         static string MarkdownToBbCodeOldString(string source)

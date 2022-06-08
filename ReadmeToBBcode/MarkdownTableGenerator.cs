@@ -25,6 +25,7 @@ namespace ReadmeToBBcode
 
             string[] headerRowColumns = MarkDownRowToColumns(line);
             table.AddColumns(headerRowColumns);
+            table.Columns[0].Alignment = Justify.Left;
 
             bool isFirstRow = true;
 
@@ -64,7 +65,6 @@ namespace ReadmeToBBcode
             var console = AnsiConsole.Create(new AnsiConsoleSettings()
             {
                 Out = output,
-                Ansi = AnsiSupport.No,
             }) ;
 
             if(maxWidth != 0)

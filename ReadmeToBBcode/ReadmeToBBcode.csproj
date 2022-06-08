@@ -4,9 +4,6 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
 	<PublishSingleFile>true</PublishSingleFile>
-	<!--<SelfContained>true</SelfContained>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>-->
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -18,7 +15,8 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="REM copy $(OutDir)$(AssemblyName).exe c:\work\&#xD;&#xA;REM copy $(OutDir)$(AssemblyName).dll c:\work\&#xD;&#xA;" />
+    <Exec Command="REM copy $(OutDir)$(AssemblyName).exe c:\Utils\&#xD;&#xA;REM copy $(OutDir)$(AssemblyName).dll c:\work\&#xD;&#xA;" />
   </Target>
 
 </Project>
+ 
