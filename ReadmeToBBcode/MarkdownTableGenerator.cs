@@ -8,15 +8,24 @@ using System.Threading.Tasks;
 namespace ReadmeToBBcode
 {
     public class MarkdownTableGenerator
-    { 
-        public string CreateTable(StreamReader textStream, int maxWidth, bool removeCodeBlocks, bool useBbCodeFont)
+    {
+
+        public string CreateTable(string source, int maxWidth = 100, bool removeCodeBlocks = true, bool useBbCodeFont = true)
+        {
+            using (StringReader reader = new StringReader(source))
+            {
+                return CreateTable(reader, maxWidth, removeCodeBlocks, useBbCodeFont);
+            }
+        }
+
+        public string CreateTable(TextReader textReader, int maxWidth = 100, bool removeCodeBlocks = true, bool useBbCodeFont = true)
         {
 
 
             var table = new Table();
             table.Border = TableBorder.Markdown;
 
-            string? line = textStream.ReadLine();
+            string? line = textReader.ReadLine();
 
             if(line is null)
             {
@@ -28,7 +37,7 @@ namespace ReadmeToBBcode
 
             bool isFirstRow = true;
 
-            while ((line = textStream.ReadLine()) is not null)
+            while ((line = textReader.ReadLine()) is not null)
             {
                 //check for mark down header line
                 if (line.Trim('|', '-').Length > 0)

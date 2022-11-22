@@ -1,5 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.CommandLine;
+using System.Text;
+using System.IO;
 
 namespace ReadmeToBBcode
 {
@@ -129,8 +131,67 @@ namespace ReadmeToBBcode
             //Code
             outText = Regex.Replace(outText, "```(.+?)```", "[code]$1[/code]", RegexOptions.Singleline);
 
+            outText = ConvertTables(outText);
             return outText;
           
         }
+
+        /// <summary>
+        /// Converts all the markdown tables in the source to ascii tables.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        static string ConvertTables(string source)
+        {
+            MarkdownTableGenerator tableGenerator = new MarkdownTableGenerator();
+
+            StringBuilder output = new StringBuilder();   
+            List<string> lines = new List<string>(source.Split('\n'));
+
+            int sequence = 0;
+            int lastCount = 0;
+
+            //Create contiguous groups of lines that have the same number of pipes, which are mark down column delimiters.
+            var pipeGroups = lines.Select(x=>
+            {
+                int count = x.Count(x=> x == '|');
+                if (lastCount != count)
+                {
+                    sequence++;
+                }
+
+                lastCount = count;
+
+                return new
+                {
+                    Sequence = sequence,
+                    PipeCount = count,
+                    Line = x,
+                };
+            }).GroupBy(x=> x.Sequence)
+            .ToList();
+
+            foreach (var group in pipeGroups)
+            {
+                var groupLines = group.ToList();
+
+
+                string groupText = string.Join('\n', groupLines.Select(x => x.Line));
+
+                if (groupLines[0].PipeCount == 0)
+                {
+                    output.AppendLine(groupText);
+                }
+                else
+                {
+                    output.AppendLine(tableGenerator.CreateTable(groupText));
+                }
+            }
+
+            return output.ToString();   
+
+        }
+        
     }
+
 }
