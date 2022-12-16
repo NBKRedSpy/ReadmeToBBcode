@@ -192,7 +192,7 @@ namespace ReadmeToBBcode
                 }
                 else
                 {
-                    output.AppendLine(tableGenerator.CreateTable(groupText));
+                    output.AppendLine(tableGenerator.CreateTable(groupText, 80));
                 }
             }
 
