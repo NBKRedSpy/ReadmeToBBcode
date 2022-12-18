@@ -24,7 +24,7 @@ namespace ReadmeToBBcode
 
         public static void ConvertToBbCode(string fileName)
         {
-            Console.WriteLine(MarkdownToBbCodeOldString(File.ReadAllText(fileName)));
+            Console.WriteLine(RegexMarkDownConvert.MarkdownToBbCodeOldString(File.ReadAllText(fileName)));
         }
 
         public static void MarkdownTableToAsciiCommand(string? filename, int maxTableWidth, bool removeCodeBlocks, 
@@ -119,37 +119,12 @@ namespace ReadmeToBBcode
             return convertCommand;
         }
 
-        static string MarkdownToBbCodeOldString(string source)
-        {
-
-            string outText = source.Replace("\r\n", "\n");
-
-            //Add a Line Feed before any header line if there is not one.
-            outText = Regex.Replace(outText, @"[^\n](\n#+.+?\n)", "\n$1", RegexOptions.Multiline);
-
-
-            ////Add a Line Feed after any header line if there is not one.
-            outText = Regex.Replace(outText, @"(\n#+.+\n)(?!\n)", "$1\n", RegexOptions.Multiline);
-
-            outText = Regex.Replace(outText, @"^# (.+?)$", "[size=4][b]$1[/b][/size]", RegexOptions.Multiline);
-            outText = Regex.Replace(outText, @"^## (.+?)$", "[size=3][b]$1[/b][/size]", RegexOptions.Multiline);
-            outText = Regex.Replace(outText, @"^### (.+?)$", "[size=2][b]$1[/b][/size]", RegexOptions.Multiline);
-
-
-            //Code
-            outText = Regex.Replace(outText, "```(.+?)```", "[code]$1[/code]", RegexOptions.Singleline);
-
-            outText = ConvertTables(outText);
-            return outText;
-          
-        }
-
         /// <summary>
         /// Converts all the markdown tables in the source to ascii tables.
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        static string ConvertTables(string source)
+        public static string ConvertTables(string source)
         {
             MarkdownTableGenerator tableGenerator = new MarkdownTableGenerator();
 
